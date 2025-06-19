@@ -9,7 +9,7 @@ import {
 const { Header, Sider, Content } = Layout;
 
 // API 基础 URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+const API_BASE_URL = 'https://my-fullstack-app-production-9cdc.up.railway.app';
 
 function App() {
   const [selectedKey, setSelectedKey] = useState('1');
