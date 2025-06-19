@@ -9,8 +9,12 @@ import {
 const { Header, Sider, Content } = Layout;
 
 // API 基础 URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://my-fullstack-app-production-9cdc.up.railway.app';
-console.log('Using API URL:', API_BASE_URL); // Debug log
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://my-fullstack-app-production-9cdc.up.railway.app'
+  : 'http://localhost:5001';
+
+console.log('Current environment:', process.env.NODE_ENV);
+console.log('Using API URL:', API_BASE_URL);
 
 function App() {
   const [selectedKey, setSelectedKey] = useState('1');
