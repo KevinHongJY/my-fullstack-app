@@ -8,6 +8,9 @@ import {
 
 const { Header, Sider, Content } = Layout;
 
+// Build timestamp to force cache invalidation
+console.log('Build timestamp:', new Date().toISOString());
+
 // API 基础 URL - directly using production URL
 const API_BASE_URL = 'https://my-fullstack-app-production-9cdc.up.railway.app';
 
