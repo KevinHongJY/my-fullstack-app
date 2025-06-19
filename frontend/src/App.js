@@ -9,11 +9,13 @@ import {
 const { Header, Sider, Content } = Layout;
 
 // API 基础 URL
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://my-fullstack-app-production-9cdc.up.railway.app'
-  : 'http://localhost:5001';
+const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isDevelopment 
+  ? 'http://localhost:5001'
+  : 'https://my-fullstack-app-production-9cdc.up.railway.app';
 
-console.log('Current environment:', process.env.NODE_ENV);
+console.log('Current hostname:', window.location.hostname);
+console.log('Is development?', isDevelopment);
 console.log('Using API URL:', API_BASE_URL);
 
 function App() {

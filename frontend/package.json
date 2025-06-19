@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://my-fullstack-4gvgefy5j-kevins-projects-33450a43.vercel.app",
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "antd": "^5.26.1",
