@@ -20,27 +20,47 @@ function App() {
   const [selectedKey, setSelectedKey] = useState('1');
   const [salesData, setSalesData] = useState(null);
   const [visitorData, setVisitorData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // 获取销售数据
-    console.log('Fetching from:', `${API_BASE_URL}/api/sales-data`); // Debug log
-    fetch(`${API_BASE_URL}/api/sales-data`)
-      .then(res => {
-        console.log('Sales data response:', res); // Debug log
-        return res.json();
-      })
-      .then(data => setSalesData(data))
-      .catch(err => console.error('Error fetching sales data:', err));
+    const fetchSalesData = async () => {
+      try {
+        console.log('Fetching sales data from:', `${API_BASE_URL}/api/sales-data`);
+        const response = await fetch(`${API_BASE_URL}/api/sales-data`);
+        console.log('Sales data response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Sales data received:', data);
+        setSalesData(data);
+      } catch (error) {
+        console.error('Error fetching sales data:', error);
+        setError(error.message);
+      }
+    };
 
     // 获取访问者数据
-    console.log('Fetching from:', `${API_BASE_URL}/api/visitor-data`); // Debug log
-    fetch(`${API_BASE_URL}/api/visitor-data`)
-      .then(res => {
-        console.log('Visitor data response:', res); // Debug log
-        return res.json();
-      })
-      .then(data => setVisitorData(data))
-      .catch(err => console.error('Error fetching visitor data:', err));
+    const fetchVisitorData = async () => {
+      try {
+        console.log('Fetching visitor data from:', `${API_BASE_URL}/api/visitor-data`);
+        const response = await fetch(`${API_BASE_URL}/api/visitor-data`);
+        console.log('Visitor data response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Visitor data received:', data);
+        setVisitorData(data);
+      } catch (error) {
+        console.error('Error fetching visitor data:', error);
+        setError(error.message);
+      }
+    };
+
+    fetchSalesData();
+    fetchVisitorData();
   }, []);
 
   const getSalesChartOption = () => {
