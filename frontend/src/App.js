@@ -9,7 +9,8 @@ import {
 const { Header, Sider, Content } = Layout;
 
 // API 基础 URL
-const API_BASE_URL = 'https://my-fullstack-app-production-9cdc.up.railway.app';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://my-fullstack-app-production-9cdc.up.railway.app';
+console.log('Using API URL:', API_BASE_URL); // Debug log
 
 function App() {
   const [selectedKey, setSelectedKey] = useState('1');
@@ -18,14 +19,22 @@ function App() {
 
   useEffect(() => {
     // 获取销售数据
+    console.log('Fetching from:', `${API_BASE_URL}/api/sales-data`); // Debug log
     fetch(`${API_BASE_URL}/api/sales-data`)
-      .then(res => res.json())
+      .then(res => {
+        console.log('Sales data response:', res); // Debug log
+        return res.json();
+      })
       .then(data => setSalesData(data))
       .catch(err => console.error('Error fetching sales data:', err));
 
     // 获取访问者数据
+    console.log('Fetching from:', `${API_BASE_URL}/api/visitor-data`); // Debug log
     fetch(`${API_BASE_URL}/api/visitor-data`)
-      .then(res => res.json())
+      .then(res => {
+        console.log('Visitor data response:', res); // Debug log
+        return res.json();
+      })
       .then(data => setVisitorData(data))
       .catch(err => console.error('Error fetching visitor data:', err));
   }, []);
