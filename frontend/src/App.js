@@ -8,20 +8,9 @@ import {
 
 const { Header, Sider, Content } = Layout;
 
-// API 基础 URL
-function getApiBaseUrl() {
-  // Check if we're in the Vercel production environment
-  if (window.location.hostname.includes('vercel.app')) {
-    return 'https://my-fullstack-app-production-9cdc.up.railway.app';
-  }
-  // For local development
-  return 'http://localhost:5001';
-}
+// API 基础 URL - directly using production URL
+const API_BASE_URL = 'https://my-fullstack-app-production-9cdc.up.railway.app';
 
-const API_BASE_URL = getApiBaseUrl();
-
-console.log('Current URL:', window.location.href);
-console.log('Current hostname:', window.location.hostname);
 console.log('Using API URL:', API_BASE_URL);
 
 function App() {
