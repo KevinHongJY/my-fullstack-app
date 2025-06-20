@@ -6,8 +6,6 @@ import {
   PieChartOutlined,
 } from '@ant-design/icons';
 
-alert('This is the latest code! Build time: ' + new Date().toISOString());
-
 const { Header, Sider, Content } = Layout;
 
 // Build timestamp to force cache invalidation
