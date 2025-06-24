@@ -8,54 +8,40 @@ import {
 
 const { Header, Sider, Content } = Layout;
 
-// Build timestamp to force cache invalidation
-console.log('Build timestamp:', new Date().toISOString());
-
-// API 基础 URL - directly using production URL
+// API 基础 URL - 生产环境直接用 Railway 地址
 const API_BASE_URL = 'https://my-fullstack-app-production-9cdc.up.railway.app';
-
-console.log('Using API URL:', API_BASE_URL);
 
 function App() {
   const [selectedKey, setSelectedKey] = useState('1');
   const [salesData, setSalesData] = useState(null);
   const [visitorData, setVisitorData] = useState(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     // 获取销售数据
     const fetchSalesData = async () => {
       try {
-        console.log('Fetching sales data from:', `${API_BASE_URL}/api/sales-data`);
         const response = await fetch(`${API_BASE_URL}/api/sales-data`);
-        console.log('Sales data response status:', response.status);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Sales data received:', data);
         setSalesData(data);
       } catch (error) {
-        console.error('Error fetching sales data:', error);
-        setError(error.message);
+        // 可以根据需要在此处处理错误
       }
     };
 
     // 获取访问者数据
     const fetchVisitorData = async () => {
       try {
-        console.log('Fetching visitor data from:', `${API_BASE_URL}/api/visitor-data`);
         const response = await fetch(`${API_BASE_URL}/api/visitor-data`);
-        console.log('Visitor data response status:', response.status);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Visitor data received:', data);
         setVisitorData(data);
       } catch (error) {
-        console.error('Error fetching visitor data:', error);
-        setError(error.message);
+        // 可以根据需要在此处处理错误
       }
     };
 
@@ -65,7 +51,6 @@ function App() {
 
   const getSalesChartOption = () => {
     if (!salesData) return {};
-    
     return {
       title: {
         text: '销售趋势',
@@ -76,18 +61,18 @@ function App() {
       },
       legend: {
         data: ['Electronics', 'Clothing', 'Food'],
-        top: '50px',  // 将图例往下移
-        type: 'scroll'  // 添加滚动功能
+        top: '50px',
+        type: 'scroll'
       },
       grid: {
-        top: '100px',  // 给图例留出空间
+        top: '100px',
         containLabel: true
       },
       xAxis: {
         type: 'category',
         data: salesData.dates,
         axisLabel: {
-          rotate: 45  // 旋转标签，防止重叠
+          rotate: 45
         }
       },
       yAxis: {
@@ -99,7 +84,6 @@ function App() {
 
   const getVisitorChartOption = () => {
     if (!visitorData) return {};
-
     return {
       title: {
         text: '页面访问分布',
@@ -118,7 +102,7 @@ function App() {
         type: 'pie',
         radius: '50%',
         data: visitorData.data,
-        center: ['50%', '60%']  // 调整饼图位置
+        center: ['50%', '60%']
       }]
     };
   };
@@ -153,14 +137,14 @@ function App() {
             <ReactECharts 
               option={getSalesChartOption()} 
               style={{ height: '500px', width: '100%' }}
-              notMerge={true}  // 防止图表重叠
+              notMerge={true}
               lazyUpdate={true}
             />
           ) : (
             <ReactECharts 
               option={getVisitorChartOption()} 
               style={{ height: '500px', width: '100%' }}
-              notMerge={true}  // 防止图表重叠
+              notMerge={true}
               lazyUpdate={true}
             />
           )}
