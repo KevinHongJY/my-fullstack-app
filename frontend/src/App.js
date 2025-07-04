@@ -1,156 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu } from 'antd';
-import ReactECharts from 'echarts-for-react';
-import {
-  LineChartOutlined,
-  PieChartOutlined,
-} from '@ant-design/icons';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import Login from './components/Login';
+import Register from './components/Register';
+import Dashboard from './components/Dashboard';
+import './App.css';
 
-const { Header, Sider, Content } = Layout;
-
-// API 基础 URL - 生产环境直接用 Railway 地址
-const API_BASE_URL = 'https://my-fullstack-app-production-9cdc.up.railway.app';
+// API 基础 URL - 根据环境自动选择
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://my-fullstack-app-production-9cdc.up.railway.app'  // 生产环境 Railway 地址
+  : 'http://localhost:5001';  // 开发环境本地地址
 
 function App() {
-  const [selectedKey, setSelectedKey] = useState('1');
-  const [salesData, setSalesData] = useState(null);
-  const [visitorData, setVisitorData] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 获取销售数据
-    const fetchSalesData = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/sales-data`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setSalesData(data);
-      } catch (error) {
-        // 可以根据需要在此处处理错误
-      }
-    };
-
-    // 获取访问者数据
-    const fetchVisitorData = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/visitor-data`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setVisitorData(data);
-      } catch (error) {
-        // 可以根据需要在此处处理错误
-      }
-    };
-
-    fetchSalesData();
-    fetchVisitorData();
+    checkAuthStatus();
   }, []);
 
-  const getSalesChartOption = () => {
-    if (!salesData) return {};
-    return {
-      title: {
-        text: '销售趋势',
-        left: 'center'
-      },
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        data: ['Electronics', 'Clothing', 'Food'],
-        top: '50px',
-        type: 'scroll'
-      },
-      grid: {
-        top: '100px',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: salesData.dates,
-        axisLabel: {
-          rotate: 45
-        }
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: salesData.series
-    };
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/user`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+      console.error('检查认证状态失败:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getVisitorChartOption = () => {
-    if (!visitorData) return {};
-    return {
-      title: {
-        text: '页面访问分布',
-        left: 'center'
-      },
-      tooltip: {
-        trigger: 'item'
-      },
-      legend: {
-        orient: 'horizontal',
-        top: '50px',
-        left: 'center'
-      },
-      series: [{
-        name: '访问量',
-        type: 'pie',
-        radius: '50%',
-        data: visitorData.data,
-        center: ['50%', '60%']
-      }]
-    };
+  const handleLogin = (userData) => {
+    setUser(userData);
   };
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE_URL}/api/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      setUser(null);
+    } catch (error) {
+      console.error('登出失败:', error);
+    }
+  };
+
+  if (loading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      加载中...
+    </div>;
+  }
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider>
-        <div style={{ height: '32px', margin: '16px', background: 'rgba(255, 255, 255, 0.2)' }} />
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[selectedKey]}
-          onSelect={({ key }) => setSelectedKey(key)}
-          items={[
-            {
-              key: '1',
-              icon: <LineChartOutlined />,
-              label: '销售趋势'
-            },
-            {
-              key: '2',
-              icon: <PieChartOutlined />,
-              label: '访问统计'
-            }
-          ]}
-        />
-      </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: '#fff' }} />
-        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 500 }}>
-          {selectedKey === '1' ? (
-            <ReactECharts 
-              option={getSalesChartOption()} 
-              style={{ height: '500px', width: '100%' }}
-              notMerge={true}
-              lazyUpdate={true}
+    <ConfigProvider locale={zhCN}>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route 
+              path="/login" 
+              element={
+                user ? <Navigate to="/dashboard" replace /> : 
+                <Login onLogin={handleLogin} apiBaseUrl={API_BASE_URL} />
+              } 
             />
-          ) : (
-            <ReactECharts 
-              option={getVisitorChartOption()} 
-              style={{ height: '500px', width: '100%' }}
-              notMerge={true}
-              lazyUpdate={true}
+            <Route 
+              path="/register" 
+              element={
+                user ? <Navigate to="/dashboard" replace /> : 
+                <Register apiBaseUrl={API_BASE_URL} />
+              } 
             />
-          )}
-        </Content>
-      </Layout>
-    </Layout>
+            <Route 
+              path="/dashboard" 
+              element={
+                user ? <Dashboard user={user} onLogout={handleLogout} apiBaseUrl={API_BASE_URL} /> : 
+                <Navigate to="/login" replace />
+              } 
+            />
+            <Route 
+              path="/" 
+              element={<Navigate to={user ? "/dashboard" : "/login"} replace />} 
+            />
+          </Routes>
+        </div>
+      </Router>
+    </ConfigProvider>
   );
 }
 
