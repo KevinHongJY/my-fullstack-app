@@ -88,8 +88,7 @@ npm start
 ```
 
 ### 4. 访问应用
-- 前端: http://localhost:3000
-- 后端API: http://localhost:5001
+- 前端: my-fullstack-app-chi.vercel.app
 
 ## API接口
 
